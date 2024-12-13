@@ -1,15 +1,37 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View style={styles.container}>
+      <View style={styles.letter}>
+        <Text>Letter</Text>
+      </View>
+      <View style={styles.gameSection}>
+        <Text>Game</Text>
+      </View>
+      <View style={styles.counter}>
+        <Text>Counter</Text>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  letter: {
+    flex: 1,
+    backgroundColor: 'yellow',
+    borderWidth: 1,
+  },
+  gameSection: {
+    flex: 5,
+  },
+  counter: {
+    flex: 1,
+    backgroundColor: 'pink',
+    borderWidth: 1
+  },
+});
