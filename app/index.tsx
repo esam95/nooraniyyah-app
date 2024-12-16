@@ -1,3 +1,4 @@
+import GameSection from "@/components/GameSection";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Index() {
@@ -7,7 +8,7 @@ export default function Index() {
         <Text>Letter</Text>
       </View>
       <View style={styles.gameSection}>
-        <Text>Game</Text>
+        <GameSection/>
       </View>
       <View style={styles.counter}>
         <Text>Counter</Text>
