@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
-
+import { generateRandomLetter } from '@/functions/GenerateRandomLetter';
 const { width, height } = Dimensions.get('window');
 
+interface SetScoreProps {
+  targetLetter: string;
+  score: number;
+  setScore: (score: number) => void;
+}
 interface Ball {
   id: number; // Unique identifier for each ball
   animation: Animated.Value; // Individual animation for each ball
   left: number; // Horizontal position
   letter: string; // Letter assigned to the ball
 }
-const generateRandomLetter = (): string => {
-  const letters = ['A', 'B', 'C', 'D']; // Possible letters
-  const randomIndex = Math.floor(Math.random() * letters.length);
-  return letters[randomIndex];
-};
+
 
 const BALL_SPEED = 50;
 
-const GameSection: React.FC = () => {
+export default function GameSection({ targetLetter, score, setScore}: SetScoreProps) {
   const [balls, setBalls] = useState<Ball[]>([]);
-  const [score, setScore] = useState<number>(0);
-  const [targetLetter, setTargetLetter] = useState<string>(generateRandomLetter());
 
   useEffect(() => {
     // Spawn a new ball every 1 second
     const interval = setInterval(() => {
       spawnBall();
-    }, 1000);
+    }, 4000);
 
     return () => clearInterval(interval); // Clean up the interval when the component unmounts
   }, []);
@@ -56,9 +55,8 @@ const GameSection: React.FC = () => {
 
   const handlePress = (letter: string, id:number) => {
     if (letter === targetLetter) {
-      setScore(score + 1);
+      setScore(score + 5);
       setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== id));
-      // setTargetLetter(generateRandomLetter()); // Change target letter
     }
   };
 
@@ -68,7 +66,6 @@ const GameSection: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text>{score}</Text><Text>{targetLetter}</Text>
       {balls.map((ball) => (
         <Animated.View
           key={ball.id}
@@ -120,4 +117,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GameSection;
