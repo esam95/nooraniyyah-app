@@ -10,19 +10,22 @@ interface SetScoreProps {
 }
 interface Ball {
   id: number; // Unique identifier for each ball
-  animation: Animated.Value; // Individual animation for each ball
+  fallingAnimation: Animated.Value; // Individual animation for each ball
+  scaleAnimation: Animated.Value;
+  opacityAnimation: Animated.Value;
   left: number; // Horizontal position
   letter: string; // Letter assigned to the ball
 }
 
-
 const BALL_SPEED = 50;
+const distanceToTravel = height; // From top (0) to bottom (screen height)
+const duration = (distanceToTravel / BALL_SPEED) * 1000; // Time = distance / speed (convert to ms)
 
 export default function GameSection({ targetLetter, score, setScore}: SetScoreProps) {
   const [balls, setBalls] = useState<Ball[]>([]);
 
   useEffect(() => {
-    // Spawn a new ball every 1 second
+    // Spawn a new ball every xx seconds
     const interval = setInterval(() => {
       spawnBall();
     }, 4000);
@@ -33,17 +36,17 @@ export default function GameSection({ targetLetter, score, setScore}: SetScorePr
   const spawnBall = () => {
     const newBall: Ball = {
       id: Date.now(), // Unique ID based on timestamp
-      animation: new Animated.Value(0), // Start at the top of the screen
+      fallingAnimation: new Animated.Value(0), // Start at the top of the screen
+      scaleAnimation: new Animated.Value(1),
+      opacityAnimation: new Animated.Value(1),
       left: Math.random() * (width - 50), // Random horizontal position
       letter: generateRandomLetter(), // Random letter between A and D
     };
 
     setBalls((prevBalls) => [...prevBalls, newBall]); // Add new ball to the state
-    const distanceToTravel = height; // From top (0) to bottom (screen height)
-    const duration = (distanceToTravel / BALL_SPEED) * 1000; // Time = distance / speed (convert to ms)
-
+    
     // Animate the ball to fall down
-    Animated.timing(newBall.animation, {
+    Animated.timing(newBall.fallingAnimation, {
       toValue: distanceToTravel, // Move to the bottom of the screen
       duration: duration, // Falls over 5 seconds
       useNativeDriver: true,
@@ -53,15 +56,31 @@ export default function GameSection({ targetLetter, score, setScore}: SetScorePr
     });
   };
 
-  const handlePress = (letter: string, id:number) => {
-    if (letter === targetLetter) {
+  const handlePress = (clickedBall: Ball) => {
+    if (clickedBall.letter === targetLetter) {
       setScore(score + 5);
-      setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== id));
+      popBall(clickedBall);
     }
   };
 
-  const removeBall = (id: number) => {
-    setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== id));
+  const popBall = (clickedBall: Ball) => {
+    Animated.sequence([
+      // Scale the ball up to 1.5x size
+      Animated.timing(clickedBall.scaleAnimation, {
+        toValue: 1.5,
+        duration: 100, // Duration for scaling up
+        useNativeDriver: true,
+      }),
+      // Scale the ball back down to 0
+      Animated.timing(clickedBall.scaleAnimation, {
+        toValue: 0,
+        duration: 150, // Duration for shrinking down
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setBalls((prevBalls) => prevBalls.filter((ball) => ball.id !== clickedBall.id));
+    }
+    );
   };
 
   return (
@@ -72,12 +91,13 @@ export default function GameSection({ targetLetter, score, setScore}: SetScorePr
           style={[
             styles.ball,
             {
-              transform: [{ translateY: ball.animation }],
-              left: ball.left, // Horizontal position
+              transform: [{ translateY: ball.fallingAnimation }, { scale: ball.scaleAnimation }],
+              opacity: ball.opacityAnimation,
+              left: ball.left,
             },
           ]}
         >
-          <TouchableWithoutFeedback onPress={() => handlePress(ball.letter, ball.id)}>
+          <TouchableWithoutFeedback onPress={() => handlePress(ball)}>
             <View style={styles.ballInner}>
               <Text style={styles.letter}>{ball.letter}</Text>
             </View>
