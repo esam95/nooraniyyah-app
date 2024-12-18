@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { generateRandomLetter } from '@/functions/GenerateRandomLetter';
-const { width, height } = Dimensions.get('window');
 
-interface SetScoreProps {
+
+interface Props {
   targetLetter: string;
   score: number;
   setScore: (score: number) => void;
@@ -17,11 +17,13 @@ interface Ball {
   letter: string; // Letter assigned to the ball
 }
 
+//CONSTANTS
+const { width, height } = Dimensions.get('window');
 const BALL_SPEED = 50;
 const distanceToTravel = height; // From top (0) to bottom (screen height)
 const duration = (distanceToTravel / BALL_SPEED) * 1000; // Time = distance / speed (convert to ms)
 
-export default function GameSection({ targetLetter, score, setScore}: SetScoreProps) {
+export default function GameSection({ targetLetter, score, setScore}: Props) {
   const [balls, setBalls] = useState<Ball[]>([]);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function GameSection({ targetLetter, score, setScore}: SetScorePr
   const spawnBall = () => {
     const newBall: Ball = {
       id: Date.now(), // Unique ID based on timestamp
-      fallingAnimation: new Animated.Value(0), // Start at the top of the screen
+      fallingAnimation: new Animated.Value(-50), // Start at the top of the screen
       scaleAnimation: new Animated.Value(1),
       opacityAnimation: new Animated.Value(1),
       left: Math.random() * (width - 50), // Random horizontal position

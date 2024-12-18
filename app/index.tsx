@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import GameSection from "@/components/GameSection";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { generateRandomLetter } from '@/functions/GenerateRandomLetter';
 import TargetLetter from '@/components/TargetLetter';
 import Score from '@/components/Score';
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 2,
     borderColor: '#FFC107', // Lighter yellow border
+    zIndex: 2,
   },
   gameSection: {
     flex: 5,
